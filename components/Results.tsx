@@ -25,7 +25,7 @@ export function Results({ round }: { round: FinishedRound }) {
     })();
   }, [round.pack_id, round.prompt_id]);
 
-  const mega = round.answers.find((a) => a.megaohm)!;
+  const mega = round.answers.find((a) => a.megaohm); // only present when this round found it
   const mine = useMemo(() => round.answers.filter((a) => a.found).sort((a, b) => b.rarity - a.rarity), [round]);
   const all = useMemo(() => [...round.answers].sort((a, b) => Number(b.megaohm) - Number(a.megaohm) || b.rarity - a.rarity), [round]);
   const shown = all.filter((a) => filter === "all" || (filter === "found" ? a.found : !a.found));
@@ -64,11 +64,17 @@ export function Results({ round }: { round: FinishedRound }) {
             <Resistor tier={TIERS[4]} width={40} />
             <div>
               <div className="label">The Megaohm · 1MΩ</div>
-              <div style={{ fontSize: 20, fontWeight: 800 }} className="glow">{mega.name}</div>
-              <div className="muted" style={{ fontSize: 13 }}>
-                {round.got_megaohm ? `You found it! +${mega.rarity} +100 bonus.` : "The rarest answer on the list. Maybe next time."}
-                {" "}Found by {mega.found_pct}% of rounds.
-              </div>
+              {mega ? (
+                <>
+                  <div style={{ fontSize: 20, fontWeight: 800 }} className="glow">{mega.name}</div>
+                  <div className="muted" style={{ fontSize: 13 }}>You found it! +{mega.rarity} +100 bonus. Found in {round.megaohm_pct}% of rounds.</div>
+                </>
+              ) : (
+                <>
+                  <div style={{ fontSize: 20, fontWeight: 800 }} className="glow">Still hidden</div>
+                  <div className="muted" style={{ fontSize: 13 }}>The Megaohm is never revealed. Only {round.megaohm_pct}% of rounds have found it. Keep hunting.</div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -90,7 +96,10 @@ export function Results({ round }: { round: FinishedRound }) {
 
       <div className="panel">
         <div className="spread" style={{ marginBottom: 12 }}>
-          <h2 style={{ margin: 0 }}>Every accepted answer</h2>
+          <div>
+            <h2 style={{ margin: 0 }}>Every accepted answer</h2>
+            {!mega && <div className="muted" style={{ fontSize: 13 }}>…plus one hidden Megaohm.</div>}
+          </div>
           <div className="tabs" role="tablist" style={{ margin: 0 }}>
             {(["all", "found", "missed"] as const).map((f) => (
               <button key={f} className="tab" role="tab" aria-selected={filter === f} onClick={() => setFilter(f)}>{f}</button>

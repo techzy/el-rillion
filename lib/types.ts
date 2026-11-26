@@ -29,7 +29,7 @@ export type FinishedRound = {
   over: true; round_id: string; mode: "daily" | "pack"; ranked: boolean;
   daily_date: string | null; daily_number: number | null; score: number; misses: number;
   got_megaohm: boolean; prompt_id: string; pack_id: string; title: string; blurb: string;
-  answer_count: number; found_count: number; answers: RevealAnswer[];
+  answer_count: number; found_count: number; megaohm_pct: number; answers: RevealAnswer[];
 };
 
 export type GuessResult =

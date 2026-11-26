@@ -277,6 +277,12 @@ begin
     'score', r.score, 'misses', r.misses, 'got_megaohm', r.got_megaohm,
     'prompt_id', p.id, 'pack_id', p.pack_id, 'title', p.title, 'blurb', p.blurb,
     'answer_count', p.answer_count, 'found_count', cardinality(r.found),
+    -- The Megaohm is never revealed unless this round found it.
+    'megaohm_pct', (
+      select case when total = 0 then 0 else round(100.0 * (
+          select count(*) from rounds x
+          where x.prompt_id = r.prompt_id and x.ends_at <= now() and a.id = any(x.found)) / total) end
+      from answers a where a.prompt_id = r.prompt_id and a.is_megaohm),
     'answers', (
       select json_agg(json_build_object(
         'answer_id', a.id, 'name', a.name, 'rarity', a.rarity, 'megaohm', a.is_megaohm,
@@ -285,7 +291,7 @@ begin
             select count(*) from rounds x
             where x.prompt_id = r.prompt_id and x.ends_at <= now() and a.id = any(x.found)) / total) end
       ) order by a.rarity, a.name)
-      from answers a where a.prompt_id = r.prompt_id));
+      from answers a where a.prompt_id = r.prompt_id and (not a.is_megaohm or a.id = any(r.found))));
 end $$;
 
 -- ---------------------------------------------------------------- accounts
