@@ -1,44 +1,35 @@
 export type Pack = { id: string; name: string; description: string; sort: number };
-export type Prompt = {
-  id: string; pack_id: string; title: string; blurb: string; sort: number; answer_count: number;
+/** Public prompt metadata. Titles stay hidden until a prompt is started. */
+export type PromptMeta = { id: string; pack_id: string; chapter: number; sort: number; answer_count: number };
+
+export type Daily = { daily_date: string; daily_number: number; prompts: number; players: number };
+
+export type SheetItem = {
+  idx: number;
+  state: "todo" | "active" | "done";
+  title: string | null;
+  answer: string | null;
+  points: number | null;
+  megaohm: boolean;
+  accepted: number | null;
+  misses: number;
+  ends_at: string | null;
 };
 
-export type Daily = {
-  daily_date: string; daily_number: number; prompt_id: string; title: string; blurb: string;
-  pack_id: string; answer_count: number; players: number;
-};
-
-export type FoundAnswer = { answer_id: number; name: string; rarity: number; megaohm: boolean };
-
-export type StartResult =
-  | { already_played: true; round_id: string }
-  | {
-      already_played: false; round_id: string; ranked: boolean; ends_at: string; server_now: string;
-      prompt_id: string; title: string; blurb: string; answer_count: number;
-    };
-
-export type LiveRound = {
-  over: false; round_id: string; mode: "daily" | "pack"; ranked: boolean; ends_at: string;
-  server_now: string; score: number; prompt_id: string; title: string; blurb: string;
-  answer_count: number; found: FoundAnswer[];
-};
-
-export type RevealAnswer = FoundAnswer & { found: boolean; found_pct: number };
-
-export type FinishedRound = {
-  over: true; round_id: string; mode: "daily" | "pack"; ranked: boolean;
-  daily_date: string | null; daily_number: number | null; score: number; misses: number;
-  got_megaohm: boolean; prompt_id: string; pack_id: string; title: string; blurb: string;
-  answer_count: number; found_count: number; megaohm_pct: number; answers: RevealAnswer[];
+export type Sheet = {
+  play_id: string; mode: "daily" | "pack"; ranked: boolean;
+  daily_date: string | null; daily_number: number | null;
+  pack_id: string | null; pack_name: string | null; chapter: number | null;
+  server_now: string; total: number; finished: boolean; items: SheetItem[];
 };
 
 export type GuessResult =
-  | { status: "hit"; answer_id: number; name: string; rarity: number; megaohm: boolean; score: number; found_count: number }
-  | { status: "dupe"; name: string; score: number }
-  | { status: "miss" | "empty" | "time_up"; score: number };
+  | { status: "hit"; answer: string; points: number; megaohm: boolean; accepted: number }
+  | { status: "miss" | "done" | "time_up" };
 
 export type MyStats = {
   display_name: string | null; total_score: number; dailies_played: number; megaohms: number;
-  current_streak: number; best_streak: number; played_today: boolean;
-  pack_rounds: Record<string, { score: number; megaohm: boolean; round_id: string }>;
+  current_streak: number; best_streak: number;
+  today: { play_id: string; total: number; finished: boolean } | null;
+  pack_best: Record<string, number>;
 } | null;

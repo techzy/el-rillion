@@ -2,34 +2,41 @@
 
 *one in a megaohm.* A daily electrical-engineering category game at **https://el-rillion.lifeofjeso.ca**.
 
-Each prompt (e.g. "Name a type of diode") has a list of accepted answers. You get 90 seconds to name as many
-as you can. Each answer scores its rarity (1–100), and the rarest answer in every prompt, the **Megaohm**, is worth
-+100 extra.
+Each sheet is **7 prompts, 25 seconds each**. A prompt stays hidden until you start it, and your first correct
+answer locks in. Answers are tiered 10 / 15 / 30 / 60 / 85 / 100 points. The single 100 in each prompt is the
+**Megaohm**. A perfect sheet is 700. Answer lists are never revealed: players see only their own answer and the
+accepted-answer count.
 
-- **Daily prompt**: the same for everyone, changes at midnight America/Toronto, and gives signed-in players one ranked attempt.
-- **Themed packs**: 6 packs × 5 prompts. Your first attempt at each prompt is ranked, and replays are practice.
+- **Daily sheet**: the same 7 prompts for everyone, changing at midnight America/Toronto. It walks a fresh shuffle
+  of the whole bank each cycle. Signed-in players get one attempt.
+- **Themed packs**: 6 packs × 2 chapters × 7 prompts (84 prompts). Replays are allowed, and your best score per prompt counts.
 - **Accounts**: email magic link via Supabase Auth. Guests can play; only signed-in players with a display name are ranked.
-- **Leaderboards**: today's daily, all-time, per pack, and streaks.
+- **Leaderboards**: today's daily, all-time (daily totals + pack bests), per pack, and streaks.
 
 ## Stack
 
 - Next.js 15 (App Router) on Vercel.
 - Supabase (Postgres + Auth), project `el-rillion` (`ypfgxjyenazwtapiqjbu`, ca-central-1).
-- Answers are never sent to the browser before a round ends. Tables `answers`, `answer_keys` and `rounds` have
-  RLS with no policies, and all gameplay goes through `SECURITY DEFINER` functions (`start_round`, `submit_guess`,
-  `finish_round`, `get_round`, `lb_*`, `my_stats`) that check the 90-second clock and compute the score on the server.
+- Answers are never sent to the browser. `answers`, `answer_keys`, `plays` and `play_items` have RLS with no
+  policies, and prompt titles are column-restricted until a prompt is started. All gameplay goes through
+  `SECURITY DEFINER` functions (`start_play`, `start_item`, `guess_item`, `skip_item`, `get_play`, `lb_*`, `my_stats`)
+  that enforce the 25-second clock and score on the server.
 
 ## Editing content
 
-All prompts and answers live in `content/packs.mjs` (`"Name|rarity|alias1;alias2"`).
+Prompts live in `content/packs/*.mjs` (the original 30 are in `content/legacy.mjs`), one answer per line:
 
-```bash
-npm run seed   # validates content and writes supabase/seed.sql
+```
+<tier> <Canonical name> | alias | alias
 ```
 
-Then run `supabase/seed.sql` in the Supabase SQL editor. It replaces all content. Because it deletes and
-re-inserts answers, past rounds' found-answer IDs stop matching, so reseed only before launch or between seasons.
-To add a prompt without a reseed, run a single `select public.el_seed_prompt(...)` line from the generated file.
+```bash
+npm run seed   # validates everything and writes supabase/seed.sql
+```
+
+The validator checks for 7 prompts per chapter, exactly one 100 per prompt, and no two answers sharing a
+normalized spelling. Running `supabase/seed.sql` replaces **all** content and play history. To add a single
+prompt to a live database, run its `select public.el_seed_prompt(...)` line from that file instead.
 
 ## Local development
 

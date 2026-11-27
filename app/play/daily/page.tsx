@@ -1,7 +1,7 @@
-import { Game } from "@/components/Game";
+import { Sheet } from "@/components/Sheet";
 
-export const metadata = { title: "Daily prompt" };
+export const metadata = { title: "Daily sheet" };
 
 export default function DailyPage() {
-  return <Game mode="daily" />;
+  return <Sheet mode="daily" />;
 }

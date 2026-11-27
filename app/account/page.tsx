@@ -79,7 +79,7 @@ export default function AccountPage() {
           <div className="stat"><div className="label">Current streak</div><div className="v">{stats.current_streak}</div></div>
           <div className="stat"><div className="label">Best streak</div><div className="v">{stats.best_streak}</div></div>
           <div className="stat"><div className="label">Megaohms</div><div className="v">{stats.megaohms}</div></div>
-          <div className="stat"><div className="label">Pack prompts</div><div className="v">{Object.keys(stats.pack_rounds ?? {}).length}/30</div></div>
+          <div className="stat"><div className="label">Pack prompts</div><div className="v">{Object.keys(stats.pack_best ?? {}).length}/84</div></div>
         </div>
       )}
       <div className="row">

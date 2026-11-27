@@ -8,7 +8,7 @@ export default function PacksPage() {
       <div>
         <div className="eyebrow">Themed packs</div>
         <h1>Pick a subfield</h1>
-        <p className="muted">Each pack has five prompts. When you&apos;re signed in, your first attempt at each prompt counts toward that pack&apos;s leaderboard. Replays are for practice.</p>
+        <p className="muted">Each pack has two chapters of 7 prompts, 25 seconds each. Replay as often as you like. Your best score on each prompt counts toward the pack leaderboard.</p>
       </div>
       <PackGrid />
     </div>

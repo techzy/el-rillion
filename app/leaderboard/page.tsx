@@ -38,9 +38,9 @@ function Board() {
 
   const me = stats?.display_name;
   const cols: Record<Tab, { key: string; label: string; n?: boolean }[]> = {
-    daily: [{ key: "score", label: "Score", n: true }, { key: "found", label: "Found", n: true }, { key: "megaohm", label: "MΩ", n: true }],
-    alltime: [{ key: "score", label: "Points", n: true }, { key: "rounds", label: "Rounds", n: true }, { key: "megaohms", label: "MΩ", n: true }],
-    pack: [{ key: "score", label: "Points", n: true }, { key: "prompts_played", label: "Played", n: true }, { key: "megaohms", label: "MΩ", n: true }],
+    daily: [{ key: "score", label: "Score /700", n: true }, { key: "megaohms", label: "MΩ", n: true }],
+    alltime: [{ key: "score", label: "Points", n: true }, { key: "dailies", label: "Dailies", n: true }],
+    pack: [{ key: "score", label: "Best /1400", n: true }, { key: "prompts_played", label: "Prompts", n: true }, { key: "megaohms", label: "MΩ", n: true }],
     streaks: [{ key: "best_streak", label: "Best", n: true }, { key: "current_streak", label: "Current", n: true }],
   };
 
@@ -49,7 +49,7 @@ function Board() {
       <div>
         <div className="eyebrow">Leaderboards</div>
         <h1>Who has the highest resistance to forgetting?</h1>
-        <p className="muted">Only signed-in players with a display name are ranked. The daily counts your one attempt. Packs count your first attempt at each prompt. A streak is consecutive days of playing the daily.</p>
+        <p className="muted">Only signed-in players with a display name are ranked. Today ranks your one attempt at the daily sheet. All-time adds up your daily scores plus your best score on every pack prompt. Packs rank the sum of your best score on each prompt. A streak is consecutive days of playing the daily.</p>
       </div>
       <div className="panel">
         <div className="tabs" role="tablist">
@@ -72,7 +72,7 @@ function Board() {
                   <tr key={i} className={me && r.display_name === me ? "me" : ""}>
                     <td>{r.rank}</td>
                     <td>{r.display_name}</td>
-                    {cols[tab].map((c) => <td key={c.key} className="n">{typeof r[c.key] === "boolean" ? (r[c.key] ? "⚡" : "") : r[c.key]}</td>)}
+                    {cols[tab].map((c) => <td key={c.key} className="n">{r[c.key]}</td>)}
                   </tr>
                 ))}
               </tbody>
